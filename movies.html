@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineVerse | Movies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-play"></i></div>
+        <h2>CineVerse</h2>
+      </div>
+      <nav class="side-nav">
+        <a href="index.html"><i class="fas fa-house"></i> Home</a>
+        <a href="movies.html" class="active"><i class="fas fa-film"></i> Movies</a>
+        <a href="details.html"><i class="fas fa-circle-info"></i> Details</a>
+        <a href="watchlist.html"><i class="fas fa-bookmark"></i> Watchlist</a>
+        <a href="favorites.html"><i class="fas fa-heart"></i> Favorites</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search all movies..." id="searchInput">
+        </div>
+        <nav class="top-links">
+          <a href="index.html">Home</a>
+          <a href="movies.html" class="active">Movies</a>
+          <a href="watchlist.html">Watchlist</a>
+          <a href="favorites.html">Favorites</a>
+        </nav>
+      </header>
+
+      <section class="page-hero">
+        <h1>Explore Movies</h1>
+        <p>Browse the latest blockbusters, sci-fi epics, family adventures, thrillers, and award-winning dramas.</p>
+      </section>
+
+      <section class="section">
+        <div class="movie-grid searchable-grid">
+          <div class="movie-card" data-title="Stranger Worlds">
+            <div class="rating">⭐ 4.8</div>
+            <img src="https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Stranger Worlds</h3>
+              <p>2025 • Sci-Fi</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Enola Holmes 2">
+            <div class="rating">⭐ 4.6</div>
+            <img src="https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Enola Holmes 2</h3>
+              <p>2024 • Mystery</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Beau is Afraid">
+            <div class="rating">⭐ 4.5</div>
+            <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Beau is Afraid</h3>
+              <p>2024 • Drama</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Wendell and Wild">
+            <div class="rating">⭐ 4.7</div>
+            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Wendell & Wild</h3>
+              <p>2023 • Animation</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Matilda">
+            <div class="rating">⭐ 4.4</div>
+            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Matilda</h3>
+              <p>2023 • Family</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Midnight Shadow">
+            <div class="rating">⭐ 4.9</div>
+            <img src="https://images.unsplash.com/photo-1518929458119-e5bf444c30f4?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Midnight Shadow</h3>
+              <p>2026 • Thriller</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Emerald Mist">
+            <div class="rating">⭐ 4.7</div>
+            <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Emerald Mist</h3>
+              <p>2025 • Fantasy</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="movie-card" data-title="Last Guardian">
+            <div class="rating">⭐ 4.8</div>
+            <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=700&q=80" alt="">
+            <div class="movie-info">
+              <h3>Last Guardian</h3>
+              <p>2026 • Sci-Fi</p>
+              <div class="movie-actions">
+                <a href="details.html" class="small-btn">Details</a>
+                <button class="heart-btn"><i class="far fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>© 2026 CineVerse — Movie Discovery & Recommendation Platform</p>
+      </footer>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
