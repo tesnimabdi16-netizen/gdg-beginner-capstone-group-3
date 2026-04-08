@@ -36,9 +36,16 @@
     <main class="main-content">
       <header class="topbar">
         <div class="search-box">
-          <i class="fas fa-search"></i>
+          <i class="fas fa-search searchIcon "></i>
           <input type="text" placeholder="Search movies..." id="searchInput">
         </div>
+
+        <section class="section" id="searchResultsSection" style="display: none;">
+            <div class="section-header">
+              <h2>Search Results</h2>
+            </div>
+            <div class="movie-grid" id="searchResults"></div>
+        </section>
 
         <nav class="top-links">
           <a href="index.html" class="active">Home</a>
@@ -55,42 +62,6 @@
       </header>
 
       <section class="hero">
-        <div class="hero-content">
-          <span class="hero-badge">🔥 Featured Today</span>
-          <h1>Fantastic Four: Rise Beyond</h1>
-          <p>
-            Discover trending blockbusters, sci-fi adventures, animated stories,
-            and personalized recommendations in one beautiful movie platform.
-          </p>
-
-          <div class="hero-meta">
-            <span>2h 40m</span>
-            <span>2026</span>
-            <span>Fantasy</span>
-            <span>Action</span>
-            <span>IMDb 8.9</span>
-          </div>
-
-          <div class="hero-buttons">
-            <a href="details.html" class="btn btn-primary"><i class="fas fa-play"></i> View Details</a>
-            <button class="btn btn-secondary trailer-btn"><i class="fas fa-circle-play"></i> Watch Trailer</button>
-          </div>
-        </div>
-
-        <div class="hero-side">
-          <div class="mini-card">
-            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80" alt="preview">
-            <span>01</span>
-          </div>
-          <div class="mini-card">
-            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80" alt="preview">
-            <span>02</span>
-          </div>
-          <div class="mini-card">
-            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80" alt="preview">
-            <span>03</span>
-          </div>
-        </div>
       </section>
 
       <section class="brands">
@@ -105,110 +76,22 @@
       <section class="section">
         <div class="section-header">
           <h2>Continue Watching</h2>
-          <a href="movies.html">See All</a>
+          <a href="movies.html"  id="Movie-list-link">See All</a>
         </div>
 
         <div class="continue-row">
-          <div class="wide-card">
-            <img src="https://images.unsplash.com/photo-1518929458119-e5bf444c30f4?auto=format&fit=crop&w=900&q=80" alt="movie">
-            <div class="wide-card-content">
-              <h3>Midnight Shadow</h3>
-              <p>Action • Thriller</p>
-              <div class="progress"><span style="width: 65%;"></span></div>
-            </div>
-          </div>
-
-          <div class="wide-card">
-            <img src="https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=900&q=80" alt="movie">
-            <div class="wide-card-content">
-              <h3>Emerald Mist</h3>
-              <p>Fantasy • Adventure</p>
-              <div class="progress"><span style="width: 42%;"></span></div>
-            </div>
-          </div>
-
-          <div class="wide-card">
-            <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=900&q=80" alt="movie">
-            <div class="wide-card-content">
-              <h3>Last Guardian</h3>
-              <p>Sci-Fi • Drama</p>
-              <div class="progress"><span style="width: 80%;"></span></div>
-            </div>
-          </div>
+          
         </div>
       </section>
 
       <section class="section">
         <div class="section-header">
           <h2>Trending Now</h2>
-          <a href="movies.html">See All</a>
+          <a href="#">See All</a>
         </div>
 
         <div class="movie-grid searchable-grid">
-          <div class="movie-card" data-title="Stranger Worlds">
-            <div class="rating">⭐ 4.8</div>
-            <img src="https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=700&q=80" alt="movie">
-            <div class="movie-info">
-              <h3>Stranger Worlds</h3>
-              <p>2025 • Sci-Fi</p>
-              <div class="movie-actions">
-                <a href="details.html" class="small-btn">Details</a>
-                <button class="heart-btn"><i class="far fa-heart"></i></button>
-              </div>
-            </div>
-          </div>
 
-          <div class="movie-card" data-title="Enola Holmes 2">
-            <div class="rating">⭐ 4.6</div>
-            <img src="https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?auto=format&fit=crop&w=700&q=80" alt="movie">
-            <div class="movie-info">
-              <h3>Enola Holmes 2</h3>
-              <p>2024 • Mystery</p>
-              <div class="movie-actions">
-                <a href="details.html" class="small-btn">Details</a>
-                <button class="heart-btn"><i class="far fa-heart"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="movie-card" data-title="Beau is Afraid">
-            <div class="rating">⭐ 4.5</div>
-            <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=700&q=80" alt="movie">
-            <div class="movie-info">
-              <h3>Beau is Afraid</h3>
-              <p>2024 • Drama</p>
-              <div class="movie-actions">
-                <a href="details.html" class="small-btn">Details</a>
-                <button class="heart-btn"><i class="far fa-heart"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="movie-card" data-title="Wendell and Wild">
-            <div class="rating">⭐ 4.7</div>
-            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=700&q=80" alt="movie">
-            <div class="movie-info">
-              <h3>Wendell & Wild</h3>
-              <p>2023 • Animation</p>
-              <div class="movie-actions">
-                <a href="details.html" class="small-btn">Details</a>
-                <button class="heart-btn"><i class="far fa-heart"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="movie-card" data-title="Matilda">
-            <div class="rating">⭐ 4.4</div>
-            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=700&q=80" alt="movie">
-            <div class="movie-info">
-              <h3>Matilda</h3>
-              <p>2023 • Family</p>
-              <div class="movie-actions">
-                <a href="details.html" class="small-btn">Details</a>
-                <button class="heart-btn"><i class="far fa-heart"></i></button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
