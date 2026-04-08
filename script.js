@@ -200,117 +200,39 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
   
+//search functionality
 
-// Fetch movies from OMDb API
-async function searchMovies(movieName) {
-  const searchResults = document.getElementById("searchResults");
-  const searchResultsSection = document.getElementById("searchResultsSection");
 
-  if (!movieName.trim()) {
-    searchResultsSection.style.display = "none";
-    searchResults.innerHTML = "";
-    return;
-  }
+document.addEventListener("DOMContentLoaded", function() {
 
-  try {
-    const response = await fetch(`${BASE_URL}/movie/popular?api_key=${apiKey}`);
-    const data = await response.json();
+    
+    const searchInput = document.getElementById("searchInput");
 
-    if (data.Response === "True") {
-      searchResultsSection.style.display = "block";
+    if (searchInput) {
+        searchInput.addEventListener("input", function() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
 
-      searchResults.innerHTML = data.Search.map(movie => `
-        <div class="movie-card" data-title="${movie.Title}">
-          <div class="rating">⭐ IMDb</div>
-          <img 
-            src="${movie.Poster && movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/300x450?text=No+Image"}" 
-            alt="${movie.Title}" 
-            class="movie-poster"
-          >
-          <div class="movie-info">
-            <h3>${movie.Title}</h3>
-            <p>${movie.Year} • ${movie.Type}</p>
-            <div class="movie-actions">
-              <a href="details.html?imdbID=${movie.imdbID}" class="small-btn">Details</a>
-              <button class="heart-btn"><i class="far fa-heart"></i></button>
-            </div>
-          </div>
-        </div>
-      `).join("");
+            // Get all movie cards on the current page
+            const movieCards = document.querySelectorAll(".movie-card");
 
-      attachHeartEvents();
+            movieCards.forEach(card => {
+                const titleElement = card.querySelector("h3");
+                if (titleElement) {
+                    const title = titleElement.textContent.toLowerCase();
 
-    } else {
-      searchResultsSection.style.display = "block";
-      searchResults.innerHTML = `<p style="color: white; padding: 10px;">${data.Error}</p>`;
+                    // Show card if title contains the search term
+                    if (title.includes(searchTerm)) {
+                        card.style.display = "block";
+                    } else {
+                        card.style.display = "none";
+                    }
+                }
+            });
+        });
     }
-  } catch (error) {
-    searchResultsSection.style.display = "block";
-    searchResults.innerHTML = `<p style="color: white; padding: 10px;">Error fetching movies. Please try again.</p>`;
-    console.error("Fetch error:", error);
 
 
-  }
-}
 
-// Heart button lo
-// gic
-function attachHeartEvents() {
-  const heartButtons = document.querySelectorAll(".heart-btn");
-
-  heartButtons.forEach(button => {
-    button.addEventListener("click", function () {
-      button.classList.toggle("active");
-
-      const icon = button.querySelector("i");
-      if (button.classList.contains("active")) {
-        icon.classList.remove("far");
-        icon.classList.add("fas");
-      } else {
-        icon.classList.remove("fas");
-        icon.classList.add("far");
-      }
-    });
-  });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById("searchInput");
-
-  // Search on keyup using OMDb API
-  if (searchInput) {
-    searchInput.addEventListener("keyup", function () {
-      const movieName = searchInput.value;
-      searchMovies(movieName);
-    });
-  }
-
-  // Attach heart events for existing static cards
-  attachHeartEvents();
-
-  // Trailer button
-  const trailerButtons = document.querySelectorAll(".trailer-btn");
-  trailerButtons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      alert("🎬 Trailer feature demo! In a real project, this can open a video modal or YouTube trailer.");
-    });
-  });
-
-  // Explore button
-  const exploreBtn = document.querySelector(".upgrade-btn");
-  if (exploreBtn) {
-    exploreBtn.addEventListener("click", function () {
-      window.location.href = "movies.html";
-    });
-  }
-
-  // Notification & bookmark demo
-  const iconButtons = document.querySelectorAll(".icon-btn");
-  iconButtons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      alert("✨ Demo action! This button can be connected to notifications or saved content.");
-    });
-  });
 });
 
 
