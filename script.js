@@ -1,503 +1,600 @@
-const inputBox = document.querySelector("#searchInput");
-const searchIcon = document.querySelector(".searchIcon");
-const SearchBox = document.querySelector(".search-box");
-
-const heroSide = document.querySelector(".hero-side");
-const MovieList = document.querySelector(".section");
 const apiKey = `11ab1117a036358d42f55b2320020a34`;
 const BASE_URL = "https://api.themoviedb.org/3";
-const IMAGE_PATH = "https://images.tmdb.org/t/p/w500";
+const IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
+const BACKDROP_PATH = "https://image.tmdb.org/t/p/original";
 
-async function fetchPopularMovie() {
-  const response = await fetch(`${BASE_URL}/movie/popular?api_key=${apiKey}`);
-  const data = await response.json();
-  DisplayFeaturedTodayMovie(data);
+// DOM elements
+const trendingRow = document.getElementById("trendingRow");
+const actionRow = document.getElementById("actionRow");
+const comedyRow = document.getElementById("comedyRow");
+const horrorRow = document.getElementById("horrorRow");
+const allMoviesRow = document.getElementById("allMoviesRow");
+const favoritesRow = document.getElementById("favoritesRow");
+const watchlistRow = document.getElementById("watchlistRow");
+
+const heroBanner = document.getElementById("heroBanner");
+const bannerTitle = document.getElementById("bannerTitle");
+const bannerOverview = document.getElementById("bannerOverview");
+const bannerTrailerBtn = document.getElementById("bannerTrailerBtn");
+const bannerDetailsBtn = document.getElementById("bannerDetailsBtn");
+const heroDots = document.getElementById("heroDots");
+
+const trailerPopup = document.getElementById("trailerPopup");
+const trailerFrame = document.getElementById("trailerFrame");
+const closePopup = document.getElementById("closePopup");
+
+const detailsPopup = document.getElementById("detailsPopup");
+const detailsPoster = document.getElementById("detailsPoster");
+const detailsTitle = document.getElementById("detailsTitle");
+const detailsOverview = document.getElementById("detailsOverview");
+const detailsRelease = document.getElementById("detailsRelease");
+const detailsRating = document.getElementById("detailsRating");
+const detailsRuntime = document.getElementById("detailsRuntime");
+const detailsStatus = document.getElementById("detailsStatus");
+const detailsGenreBadge = document.getElementById("detailsGenreBadge");
+const detailsFavoriteBtn = document.getElementById("detailsFavoriteBtn");
+const detailsWatchlistBtn = document.getElementById("detailsWatchlistBtn");
+const detailsTrailerBtn = document.getElementById("detailsTrailerBtn");
+const closeDetails = document.getElementById("closeDetails");
+
+const globalLoading = document.getElementById("globalLoading");
+const toast = document.getElementById("toast");
+
+// Settings
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.getElementById("openSettings");
+const closeSettings = document.getElementById("closeSettings");
+const saveSettings = document.getElementById("saveSettings");
+const themeSelect = document.getElementById("themeSelect");
+const cardSizeSelect = document.getElementById("cardSizeSelect");
+const animToggle = document.getElementById("animToggle");
+const sliderToggle = document.getElementById("sliderToggle");
+
+// LocalStorage
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+let currentDetailsMovie = null;
+
+let heroMovies = [];
+let heroIndex = 0;
+let heroInterval = null;
+
+// Settings defaults
+let appSettings = JSON.parse(localStorage.getItem("movieAppSettings")) || {
+  theme: "default",
+  cardSize: "medium",
+  animations: true,
+  autoSlider: true,
+};
+
+// Helpers
+function showToast(message) {
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
-async function DisplayFeaturedTodayMovie(data) {
-  const allMovies = data.results;
+function showLoading() {
+  if (globalLoading) globalLoading.style.display = "flex";
+}
 
-  if (!allMovies || allMovies.length === 0) return;
+function hideLoading() {
+  if (globalLoading) globalLoading.style.display = "none";
+}
 
-  const randomIndex = Math.floor(Math.random() * allMovies.length);
-  const movie = allMovies[randomIndex];
+function getPrimaryGenre(movie) {
+  const ids = movie.genre_ids || [];
+  if (ids.includes(27)) return "Horror";
+  if (ids.includes(35)) return "Comedy";
+  if (ids.includes(28)) return "Action";
+  if (ids.includes(878)) return "Sci-Fi";
+  return "Movie";
+}
 
-  const { title, overview, release_date, poster_path } = movie;
+function getPopupGenreClass(movie) {
+  const ids = movie.genre_ids || [];
+  if (ids.includes(27)) return "horror";
+  if (ids.includes(35)) return "comedy";
+  if (ids.includes(28)) return "action";
+  if (ids.includes(878)) return "sci-fi";
+  return "general";
+}
 
-  const HeroContent = document.querySelector(".hero");
-  if (!HeroContent) return;
+function isInFavorites(id) {
+  return favorites.some((fav) => fav.id === id);
+}
 
-  HeroContent.innerHTML = "";
+function isInWatchlist(id) {
+  return watchlist.some((w) => w.id === id);
+}
 
-  const contentDiv = document.createElement("div");
-  contentDiv.classList.add("hero-content");
-  contentDiv.innerHTML = `
-        <span class="hero-badge">🔥 Featured Today</span>
-        <h1>${title}</h1>
-        <p>${overview}</p>
+function saveFavorites() {
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
 
-        <div class="hero-meta">
-            <span>2h 40m</span>
-            <span>${release_date}</span>
-            <span>Action</span>
-            <span>IMDb 8.9</span>
-        </div>
+function saveWatchlist() {
+  localStorage.setItem("watchlist", JSON.stringify(watchlist));
+}
 
-        <div class="hero-buttons">
-            <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> View Details</a>
-            <button class="btn btn-secondary trailer-btn"><i class="fas fa-circle-play"></i> Watch Trailer</button>
-        </div>
+function addToFavorites(movie) {
+  if (isInFavorites(movie.id)) {
+    showToast(`${movie.title} is already in Favorites`);
+    return false;
+  }
+  favorites.push(movie);
+  saveFavorites();
+  showToast(`${movie.title} added to Favorites ❤`);
+  return true;
+}
+
+function addToWatchlist(movie) {
+  if (isInWatchlist(movie.id)) {
+    showToast(`${movie.title} is already in Watchlist`);
+    return false;
+  }
+  watchlist.push(movie);
+  saveWatchlist();
+  showToast(`${movie.title} added to Watchlist ➕`);
+  return true;
+}
+
+function removeFromFavorites(movieId) {
+  favorites = favorites.filter((m) => m.id !== movieId);
+  saveFavorites();
+  if (favoritesRow) loadFavorites();
+  showToast("Removed from Favorites");
+}
+
+function removeFromWatchlist(movieId) {
+  watchlist = watchlist.filter((m) => m.id !== movieId);
+  saveWatchlist();
+  if (watchlistRow) loadWatchlist();
+  showToast("Removed from Watchlist");
+}
+
+// Fetch
+async function fetchMovies(url) {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.results || [];
+}
+
+async function fetchMovieDetails(id) {
+  const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${apiKey}`);
+  return await res.json();
+}
+
+async function fetchTrailer(id) {
+  const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${apiKey}`);
+  const data = await res.json();
+  return data.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
+}
+
+// Render movies
+function renderMovies(movies, container) {
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!movies.length) {
+    container.innerHTML = `<p style="padding: 10px 0 20px 4px; color:#aaa;">No movies found.</p>`;
+    return;
+  }
+
+  movies.forEach((movie) => {
+    if (!movie.poster_path) return;
+
+    const genre = getPrimaryGenre(movie);
+
+    const movieEl = document.createElement("div");
+    movieEl.classList.add("movie-item");
+    movieEl.dataset.genre = genre;
+
+    const inFav = isInFavorites(movie.id);
+    const inWatch = isInWatchlist(movie.id);
+    const isFavPage = container.id === "favoritesRow";
+    const isWatchPage = container.id === "watchlistRow";
+
+    movieEl.innerHTML = `
+      <img src="${IMAGE_PATH + movie.poster_path}" alt="${movie.title}">
+      
+      <div class="card-top">
+        <span class="genre-pill">${genre}</span>
+        <span class="score-pill">⭐ ${Number(movie.vote_average).toFixed(1)}</span>
+      </div>
+
+      <div class="movie-info">
+        <h3>${movie.title}</h3>
+        <div class="rating"></div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="favorite-btn" title="Favorite">${inFav ? "💖" : "❤"}</button>
+        <button class="watchlist-btn" title="Watchlist">${inWatch ? "✓" : "+"}</button>
+        <button class="trailer-btn" title="Trailer">▶</button>
+        ${isFavPage ? `<button class="remove-btn remove-fav-btn" title="Remove">✖</button>` : ""}
+        ${isWatchPage ? `<button class="remove-btn remove-watch-btn" title="Remove">✖</button>` : ""}
+      </div>
     `;
 
-  const posterDiv = document.createElement("div");
-  posterDiv.classList.add("hero-side");
-  posterDiv.innerHTML = `
-        <img src="${IMAGE_PATH + poster_path}" alt="${title}">
-    `;
-
-  HeroContent.appendChild(contentDiv);
-  HeroContent.appendChild(posterDiv);
-
-  HeroContent.style.display = "grid";
-  HeroContent.style.gridTemplateColumns = "1.35fr 0.65fr";
-  HeroContent.style.gap = "40px";
-  HeroContent.style.alignItems = "center";
-  HeroContent.style.minHeight = "420px";
-  HeroContent.style.padding = "34px";
-
-  const posterImg = posterDiv.querySelector("img");
-  if (posterImg) {
-    posterImg.style.width = "100%";
-    posterImg.style.maxWidth = "340px";
-    posterImg.style.height = "auto";
-    posterImg.style.borderRadius = "20px";
-    posterImg.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.5)";
-    posterImg.style.border = "8px solid rgba(255,255,255,0.12)";
-  }
-
-  if (window.innerWidth <= 1100) {
-    HeroContent.style.gridTemplateColumns = "1fr";
-    HeroContent.style.textAlign = "center";
-    posterDiv.style.order = "-1";
-    posterDiv.style.marginBottom = "30px";
-  }
-}
-async function FetchNowPlayingMovie() {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/movie/now_playing?api_key=${apiKey}&language=en-US&page=1`,
-    );
-
-    if (!response.ok) throw new Error("Failed to fetch now playing movies");
-
-    const data = await response.json();
-
-    DisplayMovieNowPlaying(data);
-  } catch (error) {
-    console.error("Error fetching now playing movies:", error);
-  }
-}
-
-function DisplayMovieNowPlaying(data) {
-  const NowPlayingSection = document.querySelector(".continue-row");
-
-  NowPlayingSection.innerHTML = "";
-  const moviesToShow = data.results.slice(0, 16);
-  moviesToShow.forEach((movie) => {
-    const movieCard = document.createElement("div");
-    movieCard.classList.add("movie-card");
-
-    movieCard.innerHTML = `
-                    <div class="rating">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}</div>
-                    <img src="${IMAGE_PATH + movie.poster_path}" alt="${movie.title}">
-                    <div class="movie-info">
-                        <h3>${movie.title}</h3>
-                        <p>${movie.release_date || "Unknown"}</p>
-                        <div class="movie-actions">
-                            <a href="#?id=${movie.id}" class="small-btn">Details</a>
-                            <button class="heart-btn"><i class="far fa-heart"></i></button>
-                        </div>
-                    </div>
-                `;
-
-    NowPlayingSection.appendChild(movieCard);
-  });
-}
-
-//fetch trending  movie for the past week
-
-async function FetchTrendingMovie() {
-  //length of trending. it could be day, week or month
-  const forHowLong = "week";
-  const response = await fetch(
-    `${BASE_URL}/trending/movie/${forHowLong}?api_key=${apiKey}`,
-  );
-  const data = await response.json();
-  DisplayTrendingMovie(data);
-}
-
-function DisplayTrendingMovie(data) {
-  const TrendinGMovie = document.querySelector(".searchable-grid");
-
-  TrendinGMovie.innerHTML = "";
-
-  // Loop through the first 20 movies
-  data.results.slice(0, 15).forEach((movie) => {
-    const { title, release_date, poster_path, vote_average } = movie;
-
-    const MovieCard = document.createElement("div");
-    MovieCard.classList.add("movie-card");
-
-    MovieCard.innerHTML = `
-                    <div class="rating">⭐ ${vote_average.toFixed(2)}</div>
-                    <img src="${IMAGE_PATH + poster_path}" alt="${title}">
-                    <div class="movie-info">
-                        <h3>${title}</h3>
-                        <p>${release_date}</p>
-                        <div class="movie-actions">
-                            <a href="#?id=${movie.id}" class="small-btn">Details</a>
-                            <button class="heart-btn"><i class="far fa-heart"></i></button>
-                        </div>
-                    </div>
-                `;
-
-    TrendinGMovie.appendChild(MovieCard);
-  });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const LinkOfMovieList = document.getElementById("Movie-list-link");
-
-  // Only add event listener if the element exists (i.e., on index.html)
-  if (LinkOfMovieList) {
-    LinkOfMovieList.addEventListener("click", function (e) {
-      e.preventDefault();
-      window.location.href = "movies.html";
-    });
-  }
-
-  if (window.location.href.includes("movies.html")) {
-    const container = document.querySelector(".searchable-grid");
-
-    if (container) {
-      container.innerHTML =
-        "<p style='color:white; text-align:center; grid-column:1/-1; padding:30px;'>Loading 100 movies...</p>";
-
-      let allMovies = [];
-
-      // Fetch 6 pages = 120 movies (to be safe)
-      const promises = [];
-      for (let page = 1; page <= 6; page++) {
-        promises.push(
-          fetch(
-            `${BASE_URL}/discover/movie?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&page=${page}`,
-          ).then((res) => res.json()),
-        );
-      }
-
-      Promise.all(promises)
-        .then((results) => {
-          results.forEach((pageData) => {
-            if (pageData.results) {
-              allMovies = allMovies.concat(pageData.results);
-            }
-          });
-
-          // Take exactly 100 movies (or more if you want)
-          const finalMovies = allMovies.slice(0, 110);
-
-          container.innerHTML = "";
-
-          finalMovies.forEach((movie) => {
-            const card = document.createElement("div");
-            card.classList.add("movie-card");
-
-            card.innerHTML = `
-                                <div class="rating">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}</div>
-                                <img src="${IMAGE_PATH}${movie.poster_path}" alt="${movie.title}">
-                                <div class="movie-info">
-                                    <h3>${movie.title}</h3>
-                                    <p>${movie.release_date || "Unknown"}</p>
-                                    <div class="movie-actions">
-                                        <a href="#?id=${movie.id}" class="small-btn">Details</a>
-                                        <button class="heart-btn"><i class="far fa-heart"></i></button>
-                                    </div>
-                                </div>
-                            `;
-
-            container.appendChild(card);
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          container.innerHTML =
-            "<p style='color:white; text-align:center; grid-column:1/-1;'>Failed to load movies.</p>";
-        });
-    }
-  }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById("searchInput");
-
-  if (searchInput) {
-    searchInput.addEventListener("input", function () {
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      const movieCards = document.querySelectorAll(".movie-card");
-
-      let hasResults = false;
-
-      // Filter movie cards
-      movieCards.forEach((card) => {
-        const titleElement = card.querySelector("h3");
-
-        if (titleElement) {
-          const title = titleElement.textContent.toLowerCase();
-
-          if (searchTerm === "" || title.includes(searchTerm)) {
-            card.style.display = "block";
-            if (searchTerm !== "") hasResults = true;
-          } else {
-            card.style.display = "none";
-          }
-        }
-      });
-
-      // Show "No results found" only when user is searching and nothing matches
-      const container =
-        document.querySelector(".searchable-grid") ||
-        document.querySelector(".movie-grid");
-
-      if (container) {
-        // Remove previous no-results message
-        const existingMsg = document.getElementById("no-results-msg");
-        if (existingMsg) existingMsg.remove();
-
-        if (searchTerm !== "" && !hasResults) {
-          const noResults = document.createElement("p");
-          noResults.id = "no-results-msg";
-          noResults.style.cssText =
-            "color: white; text-align: center; grid-column: 1/-1; padding: 40px 20px; font-size: 18px;";
-          noResults.textContent = `No results found for "${searchInput.value}"`;
-          container.appendChild(noResults);
-        }
-      }
-    });
-  }
-});
-
-document.addEventListener("click", function (e) {
-  if (e.target.closest(".heart-btn")) {
-    const heartBtn = e.target.closest(".heart-btn");
-    const movieCard = heartBtn.closest(".movie-card");
-
-    if (!movieCard) return;
-
-    heartBtn.classList.toggle("active");
-
-    const title = movieCard.querySelector("h3").textContent.trim();
-    const poster = movieCard.querySelector("img").src;
-    const rating = movieCard.querySelector(".rating").textContent.trim();
-    const releaseDate = movieCard
-      .querySelector(".movie-info p")
-      .textContent.trim();
-    const id =
-      movieCard.querySelector("a").getAttribute("href").split("=")[1] ||
-      Date.now().toString();
-
-    const movieData = {
-      id: id,
-      title: title,
-      poster: poster,
-      rating: rating,
-      releaseDate: releaseDate,
-    };
-
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-
-    if (heartBtn.classList.contains("active")) {
-      // Add to favorites
-      if (!favorites.some((m) => m.id === movieData.id)) {
-        favorites.push(movieData);
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-        showSuccessMessage(title, "added");
-      }
-    } else {
-      // Remove from favorites
-      favorites = favorites.filter((m) => m.id !== movieData.id);
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-      showSuccessMessage(title, "removed");
-    }
-  }
-});
-
-function showSuccessMessage(title, action) {
-  const msg = document.createElement("div");
-  msg.style.cssText = `
-                position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-                background: ${action === "added" ? "#10b981" : "#ef4444"};
-                color: white; padding: 14px 24px; border-radius: 12px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; font-weight: 600;
-            `;
-  msg.textContent =
-    action === "added"
-      ? `"${title}" added to favorites`
-      : `"${title}" removed from favorites`;
-
-  document.body.appendChild(msg);
-
-  setTimeout(() => {
-    msg.style.opacity = "0";
-    setTimeout(() => msg.remove(), 400);
-  }, 2500);
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  if (!window.location.href.includes("favorites.html")) return;
-
-  // Small delay to make sure DOM is fully loaded
-  setTimeout(() => {
-    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    const mainContent = document.querySelector(".main-content");
-    const emptySection = document.querySelector(".empty-card");
-
-    if (favorites.length === 0) {
-      return; // keep empty state
-    }
-
-    // Force remove empty state
-    if (emptySection) {
-      emptySection.style.display = "none";
-      emptySection.remove();
-    }
-
-    // Create favorites section
-    const section = document.createElement("section");
-    section.className = "section";
-    section.innerHTML = `<div class="section-header"><h2>Your Favorites</h2></div>`;
-
-    const grid = document.createElement("div");
-    grid.className = "movie-grid searchable-grid";
-
-    favorites.forEach((movie) => {
-      const card = document.createElement("div");
-      card.classList.add("movie-card");
-
-      card.innerHTML = `
-                        <div class="rating">${movie.rating}</div>
-                        <img src="${movie.poster}" alt="${movie.title}">
-                        <div class="movie-info">
-                            <h3>${movie.title}</h3>
-                            <p>${movie.releaseDate}</p>
-                            <div class="movie-actions">
-                                <a href="#?id=${movie.id}" class="small-btn">Details</a>
-                                <button class="heart-btn active"><i class="fas fa-heart"></i></button>
-                            </div>
-                        </div>
-                    `;
-
-      grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    if (mainContent) mainContent.appendChild(section);
-  }, 100); // small delay to ensure DOM is ready
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.href.includes("favorites.html")) {
-    const grid = document.querySelector(".searchable-grid");
-    if (grid) {
-      grid.innerHTML = ""; // Clear trending movies
-    }
-  }
-});
-
-document.addEventListener("click", function (e) {
-  if (e.target.closest(".small-btn")) {
-    const btn = e.target.closest(".small-btn");
-    const movieCard = btn.closest(".movie-card");
-
-    if (!movieCard) return;
-
-    // Find or create overview container
-    let overviewDiv = movieCard.querySelector(".movie-overview");
-
-    if (!overviewDiv) {
-      // Get movie ID
-      const href = btn.getAttribute("href");
-      const movieId = href.split("=")[1];
-
-      if (!movieId) return;
-
-      // Create overview div
-      overviewDiv = document.createElement("div");
-      overviewDiv.classList.add("movie-overview");
-      overviewDiv.style.display = "none";
-      overviewDiv.style.padding = "16px";
-      overviewDiv.style.background = "rgba(0,0,0,0.7)";
-      overviewDiv.style.color = "#fff";
-      overviewDiv.style.borderRadius = "0 0 22px 22px";
-      overviewDiv.style.fontSize = "14px";
-      overviewDiv.style.lineHeight = "1.6";
-
-      // Insert after image
-      const img = movieCard.querySelector("img");
-      if (img) {
-        img.parentNode.insertBefore(overviewDiv, img.nextSibling);
+    // Favorite button
+    const favBtn = movieEl.querySelector(".favorite-btn");
+    favBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (isInFavorites(movie.id)) {
+        showToast(`${movie.title} is already in Favorites`);
       } else {
-        movieCard.appendChild(overviewDiv);
+        addToFavorites(movie);
+        favBtn.textContent = "❤️";
       }
 
-      // Fetch overview
-      fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=en-US`,
-      )
-        .then((res) => res.json())
-        .then((movie) => {
-          overviewDiv.innerHTML = `
-                        <strong>Overview:</strong><br>
-                        ${movie.overview || "No overview available."}
-                    `;
-        })
-        .catch(() => {
-          overviewDiv.innerHTML = "Failed to load overview.";
-        });
+      renderCurrentPageAgain();
+    });
+
+    // Watchlist button
+    const watchBtn = movieEl.querySelector(".watchlist-btn");
+    watchBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (isInWatchlist(movie.id)) {
+        showToast(`${movie.title} is already in Watchlist`);
+        watchBtn.textContent = "✓";
+      } else {
+        addToWatchlist(movie);
+        watchBtn.textContent = "✓";
+      }
+
+      renderCurrentPageAgain();
+    });
+
+    // Trailer button
+    movieEl.querySelector(".trailer-btn").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      openTrailer(movie.id);
+    });
+
+    // Remove favorite button
+    const removeFavBtn = movieEl.querySelector(".remove-fav-btn");
+    if (removeFavBtn) {
+      removeFavBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeFromFavorites(movie.id);
+      });
     }
 
-    // Toggle slide up / down
-    if (
-      overviewDiv.style.display === "none" ||
-      overviewDiv.style.display === ""
-    ) {
-      overviewDiv.style.display = "block";
-      overviewDiv.style.animation = "slideUp 0.4s ease forwards";
-    } else {
-      overviewDiv.style.animation = "slideDown 0.4s ease forwards";
-      setTimeout(() => {
-        overviewDiv.style.display = "none";
-      }, 400);
+    // Remove watchlist button
+    const removeWatchBtn = movieEl.querySelector(".remove-watch-btn");
+    if (removeWatchBtn) {
+      removeWatchBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeFromWatchlist(movie.id);
+      });
     }
+
+    // Card click -> details
+    movieEl.addEventListener("click", () => showDetails(movie));
+
+    container.appendChild(movieEl);
+  });
+}
+
+function renderCurrentPageAgain() {
+  if (document.body.contains(favoritesRow)) loadFavorites();
+  if (document.body.contains(watchlistRow)) loadWatchlist();
+}
+
+// Trailer
+async function openTrailer(movieId) {
+  const trailer = await fetchTrailer(movieId);
+  if (trailer) {
+    trailerFrame.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
+    trailerPopup.style.display = "flex";
+  } else {
+    showToast("Trailer not available");
+  }
+}
+
+function closeTrailerPopup() {
+  if (trailerPopup) trailerPopup.style.display = "none";
+  if (trailerFrame) trailerFrame.src = "";
+}
+
+// Details
+async function showDetails(movie) {
+  showLoading();
+  currentDetailsMovie = movie;
+
+  try {
+    const data = await fetchMovieDetails(movie.id);
+
+    if (detailsPoster) detailsPoster.src = data.poster_path ? IMAGE_PATH + data.poster_path : "";
+    if (detailsTitle) detailsTitle.textContent = data.title || "Untitled";
+    if (detailsOverview) detailsOverview.textContent = data.overview || "No overview available.";
+    if (detailsRelease) detailsRelease.textContent = data.release_date || "N/A";
+    if (detailsRating) detailsRating.textContent = data.vote_average ? Number(data.vote_average).toFixed(1) : "N/A";
+    if (detailsRuntime) detailsRuntime.textContent = data.runtime ? `${data.runtime} min` : "N/A";
+    if (detailsStatus) detailsStatus.textContent = data.status || "N/A";
+
+    const genreNames = data.genres?.map((g) => g.name) || [];
+    const genreClass = getPopupGenreClass({ genre_ids: data.genres?.map(g => g.id) || movie.genre_ids || [] });
+
+    if (detailsGenreBadge) {
+      detailsGenreBadge.textContent = genreNames[0] || getPrimaryGenre(movie);
+    }
+
+    if (detailsPopup) {
+      detailsPopup.className = `details-popup ${genreClass}`;
+      detailsPopup.style.display = "flex";
+    }
+
+    if (detailsFavoriteBtn) {
+      detailsFavoriteBtn.textContent = isInFavorites(movie.id) ? "❤ In Favorites" : "❤ Favorite";
+    }
+
+    if (detailsWatchlistBtn) {
+      detailsWatchlistBtn.textContent = isInWatchlist(movie.id) ? "✓ In Watchlist" : "➕ Watchlist";
+    }
+  } catch (error) {
+    showToast("Failed to load movie details");
+  } finally {
+    hideLoading();
+  }
+}
+
+function closeDetailsPopup() {
+  if (detailsPopup) detailsPopup.style.display = "none";
+}
+
+// Hero slider
+function updateHero(movie) {
+  if (!heroBanner || !movie) return;
+
+  heroBanner.style.backgroundImage = `url(${BACKDROP_PATH + (movie.backdrop_path || movie.poster_path)})`;
+  bannerTitle.textContent = movie.title || "Trending Movie";
+  bannerOverview.textContent = movie.overview || "No overview available.";
+
+  if (bannerTrailerBtn) {
+    bannerTrailerBtn.onclick = () => openTrailer(movie.id);
+  }
+
+  if (bannerDetailsBtn) {
+    bannerDetailsBtn.onclick = () => showDetails(movie);
+  }
+
+  renderHeroDots();
+}
+
+function renderHeroDots() {
+  if (!heroDots || !heroMovies.length) return;
+
+  heroDots.innerHTML = "";
+  heroMovies.slice(0, 6).forEach((_, index) => {
+    const dot = document.createElement("div");
+    dot.className = `hero-dot ${index === heroIndex ? "active" : ""}`;
+    dot.addEventListener("click", () => {
+      heroIndex = index;
+      updateHero(heroMovies[heroIndex]);
+      restartHeroSlider();
+    });
+    heroDots.appendChild(dot);
+  });
+}
+
+function startHeroSlider() {
+  if (!appSettings.autoSlider || !heroMovies.length) return;
+
+  clearInterval(heroInterval);
+  heroInterval = setInterval(() => {
+    heroIndex = (heroIndex + 1) % Math.min(heroMovies.length, 6);
+    updateHero(heroMovies[heroIndex]);
+  }, 4500);
+}
+
+function restartHeroSlider() {
+  clearInterval(heroInterval);
+  startHeroSlider();
+}
+
+// Settings
+function applySettings() {
+  document.body.classList.remove("theme-cinema", "theme-midnight", "theme-blood");
+  document.body.classList.remove("cards-small", "cards-medium", "cards-large");
+  document.body.classList.remove("no-anim");
+
+  if (appSettings.theme === "cinema") document.body.classList.add("theme-cinema");
+  if (appSettings.theme === "midnight") document.body.classList.add("theme-midnight");
+  if (appSettings.theme === "blood") document.body.classList.add("theme-blood");
+
+  document.body.classList.add(`cards-${appSettings.cardSize}`);
+
+  if (!appSettings.animations) {
+    document.body.classList.add("no-anim");
+  }
+
+  if (themeSelect) themeSelect.value = appSettings.theme;
+  if (cardSizeSelect) cardSizeSelect.value = appSettings.cardSize;
+  if (animToggle) animToggle.checked = appSettings.animations;
+  if (sliderToggle) sliderToggle.checked = appSettings.autoSlider;
+}
+
+function saveAppSettings() {
+  appSettings = {
+    theme: themeSelect?.value || "default",
+    cardSize: cardSizeSelect?.value || "medium",
+    animations: animToggle?.checked ?? true,
+    autoSlider: sliderToggle?.checked ?? true,
+  };
+
+  localStorage.setItem("movieAppSettings", JSON.stringify(appSettings));
+  applySettings();
+
+  clearInterval(heroInterval);
+  if (appSettings.autoSlider) startHeroSlider();
+
+  if (settingsPanel) settingsPanel.style.display = "none";
+  showToast("Settings saved successfully ⚙");
+}
+
+// Page loads
+async function loadHome() {
+  showLoading();
+
+  try {
+    const trending = await fetchMovies(`${BASE_URL}/trending/movie/week?api_key=${apiKey}`);
+    heroMovies = trending.slice(0, 6);
+    if (heroMovies.length) {
+      heroIndex = 0;
+      updateHero(heroMovies[0]);
+      startHeroSlider();
+    }
+    renderMovies(trending.slice(0, 12), trendingRow);
+
+    const action = await fetchMovies(`${BASE_URL}/discover/movie?api_key=${apiKey}&with_genres=28`);
+    renderMovies(action.slice(0, 12), actionRow);
+
+    const comedy = await fetchMovies(`${BASE_URL}/discover/movie?api_key=${apiKey}&with_genres=35`);
+    renderMovies(comedy.slice(0, 12), comedyRow);
+
+    const horror = await fetchMovies(`${BASE_URL}/discover/movie?api_key=${apiKey}&with_genres=27`);
+    renderMovies(horror.slice(0, 12), horrorRow);
+  } catch (error) {
+    showToast("Failed to load home movies");
+  } finally {
+    hideLoading();
+  }
+}
+
+async function loadMovies() {
+  showLoading();
+  try {
+    const movies = await fetchMovies(`${BASE_URL}/discover/movie?api_key=${apiKey}&sort_by=popularity.desc`);
+    renderMovies(movies.slice(0, 80), allMoviesRow);
+  } catch (error) {
+    showToast("Failed to load movies");
+  } finally {
+    hideLoading();
+  }
+}
+
+function loadFavorites() {
+  renderMovies(favorites, favoritesRow);
+}
+
+function loadWatchlist() {
+  renderMovies(watchlist, watchlistRow);
+}
+
+// Event listeners
+if (closePopup) {
+  closePopup.addEventListener("click", closeTrailerPopup);
+}
+
+if (closeDetails) {
+  closeDetails.addEventListener("click", closeDetailsPopup);
+}
+
+if (trailerPopup) {
+  trailerPopup.addEventListener("click", (e) => {
+    if (e.target === trailerPopup) closeTrailerPopup();
+  });
+}
+
+if (detailsPopup) {
+  detailsPopup.addEventListener("click", (e) => {
+    if (e.target === detailsPopup) closeDetailsPopup();
+  });
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeTrailerPopup();
+    closeDetailsPopup();
+    if (settingsPanel) settingsPanel.style.display = "none";
   }
 });
 
-// Add keyframes for slide animation (add this once at the bottom)
-const style = document.createElement("style");
-style.innerHTML = `
-            @keyframes slideUp {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes slideDown {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(20px); }
-            }
-        `;
-document.head.appendChild(style);
-
-fetchPopularMovie();
-FetchNowPlayingMovie();
-// Do NOT call FetchTrendingMovie() on favorites.html
-if (!window.location.href.includes("favorites.html")) {
-  FetchTrendingMovie();
+if (detailsFavoriteBtn) {
+  detailsFavoriteBtn.addEventListener("click", () => {
+    if (!currentDetailsMovie) return;
+    addToFavorites(currentDetailsMovie);
+    detailsFavoriteBtn.textContent = "❤ In Favorites";
+    renderCurrentPageAgain();
+  });
 }
+
+if (detailsWatchlistBtn) {
+  detailsWatchlistBtn.addEventListener("click", () => {
+    if (!currentDetailsMovie) return;
+    addToWatchlist(currentDetailsMovie);
+    detailsWatchlistBtn.textContent = "✓ In Watchlist";
+    renderCurrentPageAgain();
+  });
+}
+
+if (detailsTrailerBtn) {
+  detailsTrailerBtn.addEventListener("click", () => {
+    if (!currentDetailsMovie) return;
+    openTrailer(currentDetailsMovie.id);
+  });
+}
+
+// Search
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+
+if (searchBtn) {
+  searchBtn.addEventListener("click", async () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    showLoading();
+    try {
+      const res = await fetch(`${BASE_URL}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      renderMovies((data.results || []).slice(0, 80), allMoviesRow);
+      showToast(`Showing results for "${query}"`);
+    } catch (error) {
+      showToast("Search failed");
+    } finally {
+      hideLoading();
+    }
+  });
+}
+
+if (searchInput) {
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") searchBtn.click();
+  });
+}
+
+// Settings events
+if (openSettings) {
+  openSettings.addEventListener("click", () => {
+    if (settingsPanel) settingsPanel.style.display = "flex";
+  });
+}
+
+if (closeSettings) {
+  closeSettings.addEventListener("click", () => {
+    if (settingsPanel) settingsPanel.style.display = "none";
+  });
+}
+
+if (settingsPanel) {
+  settingsPanel.addEventListener("click", (e) => {
+    if (e.target === settingsPanel) settingsPanel.style.display = "none";
+  });
+}
+
+if (saveSettings) {
+  saveSettings.addEventListener("click", saveAppSettings);
+}
+
+// Init
+applySettings();
+
+if (document.body.contains(trendingRow)) loadHome();
+if (document.body.contains(allMoviesRow)) loadMovies();
+if (document.body.contains(favoritesRow)) loadFavorites();
+if (document.body.contains(watchlistRow)) loadWatchlist();
