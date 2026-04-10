@@ -158,6 +158,8 @@ https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/
 
 ## Favorite movie
 
+https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/favorites.html
+
 
 
 ## Watchlist Movie
