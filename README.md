@@ -169,3 +169,6 @@ https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/
 https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/trailer1.png
 https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/tralier2.png
 
+## Movie Details 
+https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/detail%20of%20movie.png
+
