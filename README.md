@@ -108,12 +108,18 @@ const apiKey = "YOUR_API_KEY_HERE";
 ---
 
 ## 👨‍💻 Contributors
-- Kedir Lemecha (KedirL)
-- Netsanet Mulugeta (netsanetmulugeta27-gif)
-- Ruhama Hailu (ruhama-hailu)
-- Tesnim Abdi (tesnimabdi16-netizen)
-- Yayneabeba Emshaw
-- Marta Kefale (martak12)
+1,Tesnim Abdi → index.html 
+-Responsible for the main homepage structure, navigation system, and hero section that users first interact with. 
+2,Ruhama Hailu → movie.html 
+-Responsible for movie browsing page layout and displaying movies from the TMDB API. 
+3,Netsanet Mulugeta → favorites.html 
+-Responsible for designing and managing the favorites page where users save liked movies. 
+4,Marta Kefale → watchlist.html 
+-Responsible for the watchlist page where users store movies they want to watch later. 
+5,Yayneabeba Emshaw → style.css 
+-Responsible for styling, responsive design, animations, and overall UI/UX consistency across all pages. 
+6,Gebisa → script.js 
+-Responsible for all JavaScript logic including: -TMDB API integration ,                                                                         Movie fetching & search functionality ,Favorites & watchlist logic ,LocalStorage management and UI interactions (slider, modals, animations)
 
 ---
 
