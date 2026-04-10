@@ -161,5 +161,7 @@ https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/
 
 ## Watchlist Movie
 
+https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/watchlist.png
+
 
 
