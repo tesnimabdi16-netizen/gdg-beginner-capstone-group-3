@@ -1,49 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CineVerse | Favorites</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <title>Favorites</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="logo">
-        <div class="logo-icon"><i class="fas fa-play"></i></div>
-        <h2>CineVerse</h2>
-      </div>
-      <nav class="side-nav">
-        <a href="index.html"><i class="fas fa-house"></i> Home</a>
-        <a href="movies.html"><i class="fas fa-film"></i> Movies</a>
-        <a href="details.html"><i class="fas fa-circle-info"></i> Details</a>
-        <a href="watchlist.html"><i class="fas fa-bookmark"></i> Watchlist</a>
-        <a href="favorites.html" class="active"><i class="fas fa-heart"></i> Favorites</a>
-      </nav>
-    </aside>
+  <nav>
+    <div class="nav-left">
+      <a href="#" class="logo">🎬 movieo</a>
+      <a href="index.html">Home</a>
+      <a href="movies.html">Movies</a>
+      <a href="favorites.html">Favorites</a>
+      <a href="watchlist.html">Watchlist</a>
+    </div>
+    <div class="nav-right">
+      <button id="openSettings" class="settings-btn">⚙ Settings</button>
+    </div>
+  </nav>
 
-    <main class="main-content">
-      <section class="page-hero">
-        <h1>Favorites</h1>
-        <p>Your favorite movies can appear here. This page gives your project a more complete multi-page application feel.</p>
-      </section>
-
-      <section class="empty-card">
-        <i class="fas fa-heart"></i>
-        <h3>No favorites yet</h3>
-        <p>Tap the heart icon on movie cards to mark favorites. This screen is designed as a stylish placeholder for a real system.</p>
-        <a href="index.html" class="btn btn-primary">Go to Home</a>
-      </section>
-
-      <footer>
-        <p>© 2026 CineVerse — Movie Discovery & Recommendation Platform</p>
-      </footer>
-    </main>
+  <div id="globalLoading" class="loading-overlay">
+    <div class="loading"></div>
   </div>
+
+  <h2>Your Favorites</h2>
+  <div class="movie-row grid-layout" id="favoritesRow"></div>
+
+  <div class="trailer-popup" id="trailerPopup">
+    <div class="popup-content">
+      <button id="closePopup">×</button>
+      <iframe id="trailerFrame" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <div class="details-popup" id="detailsPopup">
+    <div class="popup-content details-content">
+      <div class="genre-bg fx-bg"></div>
+      <button id="closeDetails">×</button>
+      <img id="detailsPoster" src="" alt="Movie poster" />
+      <div class="details-text">
+        <span id="detailsGenreBadge" class="genre-badge">Movie</span>
+        <h2 id="detailsTitle"></h2>
+        <p id="detailsOverview"></p>
+
+        <div class="details-grid">
+          <div class="detail-chip"><strong>Release</strong><span id="detailsRelease"></span></div>
+          <div class="detail-chip"><strong>Rating</strong><span id="detailsRating"></span></div>
+          <div class="detail-chip"><strong>Runtime</strong><span id="detailsRuntime"></span></div>
+          <div class="detail-chip"><strong>Status</strong><span id="detailsStatus"></span></div>
+        </div>
+
+        <div class="details-actions">
+          <button id="detailsFavoriteBtn" class="favorite-btn">❤ Favorite</button>
+          <button id="detailsWatchlistBtn" class="watchlist-btn">➕ Watchlist</button>
+          <button id="detailsTrailerBtn" class="trailer-btn">▶ Trailer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-box">
+      <button id="closeSettings" class="close-settings">×</button>
+      <h2>Settings</h2>
+
+      <div class="setting-group">
+        <label for="themeSelect">Theme Mode</label>
+        <select id="themeSelect">
+          <option value="default">Default</option>
+          <option value="cinema">Cinema Purple</option>
+          <option value="midnight">Midnight Blue</option>
+          <option value="blood">Horror Red</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label for="cardSizeSelect">Card Size</label>
+        <select id="cardSizeSelect">
+          <option value="small">Compact</option>
+          <option value="medium" selected>Balanced</option>
+          <option value="large">Showcase</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label class="switch-wrap">
+          <span>Hover Animations</span>
+          <input type="checkbox" id="animToggle" checked />
+        </label>
+      </div>
+
+      <div class="setting-group">
+        <label class="switch-wrap">
+          <span>Auto Hero Slider</span>
+          <input type="checkbox" id="sliderToggle" checked />
+        </label>
+      </div>
+
+      <button id="saveSettings" class="save-settings-btn">Save Settings</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
   <script src="script.js"></script>
 </body>
 </html>
+
+  
