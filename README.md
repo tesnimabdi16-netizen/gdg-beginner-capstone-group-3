@@ -155,6 +155,7 @@ This project is for educational and personal use.
 
 ## Home screenshot
 https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/image.png
+https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/home%20footer.png
 
 ## Favorite movie
 [Favorite Moviea.png](https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/Favorite%20Moviea.png)
