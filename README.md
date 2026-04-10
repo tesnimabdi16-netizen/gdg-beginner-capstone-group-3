@@ -88,7 +88,7 @@ Users can customize:
 
 ## 🔑 API Setup
 
-This project uses the TMDB API.
+This project uses the OMDB API.
 
 1. Go to: https://www.themoviedb.org/
 2. Create an account
@@ -140,11 +140,13 @@ This project is for educational and personal use.
 ---
 
 ## ⭐ Acknowledgements
-- TMDB API for movie data
+- OMDB API for movie data
 - YouTube for trailer streaming
 
 ---
-
+## LIVE SITE
+  https://tesnimabdi16-netizen.github.io/gdg-beginner-capstone-group-3/
+----
 ## 📌 Notes
 - This project is fully frontend-based
 - Data persistence is handled using browser storage
