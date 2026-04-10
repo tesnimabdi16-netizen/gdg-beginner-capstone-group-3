@@ -128,7 +128,7 @@ const apiKey = "YOUR_API_KEY_HERE";
 
 -Responsible for styling, responsive design, animations, and overall UI/UX consistency across all pages. 
 
-6,Gebisa → script.js 
+6,Kedir Lemecha → script.js 
 
 -Responsible for all JavaScript logic including: -TMDB API integration ,                                                                         Movie fetching & search functionality ,Favorites & watchlist logic ,LocalStorage management and UI interactions (slider, modals, animations)
 
