@@ -157,8 +157,7 @@ This project is for educational and personal use.
 https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/image.png
 
 ## Favorite movie
-
-https://github.com/tesnimabdi16-netizen/gdg-beginner-capstone-group-3/blob/main/favorites.html
+Favorite Moviea.png
 
 
 
